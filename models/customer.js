@@ -56,6 +56,24 @@ class Customer {
     return new Customer(customer);
   }
 
+    /** find all customers by search term. */
+
+    static async search(searchTerm) {
+      const results = await db.query(
+            `SELECT id,
+                    first_name AS "firstName",
+                    last_name  AS "lastName",
+                    phone,
+                    notes
+             FROM customers
+             WHERE
+              LOWER(first_name) LIKE '%' || $1 || '%' OR
+              LOWER(last_name) LIKE '%' || $1 || '%'
+             ORDER BY last_name, first_name`, [searchTerm]
+      );
+      return results.rows.map(c => new Customer(c));
+    }
+
   /** get all reservations for this customer. */
 
   async getReservations() {
