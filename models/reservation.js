@@ -5,6 +5,7 @@
 const moment = require("moment");
 
 const db = require("../db");
+const { BadRequestError } = require("../expressError");
 
 /** A reservation for a party */
 
@@ -15,6 +16,48 @@ class Reservation {
     this.numGuests = numGuests;
     this.startAt = startAt;
     this.notes = notes;
+  }
+
+  get customerId() {
+    return this._customerId;
+  }
+
+  set customerId(val) {
+    if (this._customerId) throw new BadRequestError("Cannot reassign customer id.");
+
+    this._customerId = val;
+  }
+
+  get notes() {
+    return this._notes;
+  }
+
+  set notes(val) {
+    this._notes = val ? val : "";
+  }
+
+  get numGuests() {
+    return this._numGuests;
+  }
+
+  set numGuests(val) {
+    if (val < 1) throw new BadRequestError("Must have atleast one guest for reservation.");
+
+    this._numGuests = val;
+  }
+
+  get startAt() {
+    return this._startAt;
+  }
+
+  set startAt(val) {
+    const date = new Date(val);
+
+    if (date.toString() === "Invalid Date") {
+      throw new BadRequestError("Invalid date.");
+    }
+
+    this._startAt = date;
   }
 
   /** formatter for startAt */
@@ -52,15 +95,12 @@ class Reservation {
       );
       this.id = result.rows[0].id;
     } else {
-      //TODO: dont include customer id
       await db.query(
         `UPDATE reservations
-               SET customer_id=$1,
-               start_at=$2,
-               num_guests=$3,
-                   notes=$4
-               WHERE id = $5`, [
-        this.customerId,
+               SET start_at=$1,
+               num_guests=$2,
+                   notes=$3
+               WHERE id = $4`, [
         this.startAt,
         this.numGuests,
         this.notes,
