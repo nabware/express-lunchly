@@ -2,18 +2,23 @@
 {% block title %}Customers{% endblock %}
 {% block content %}
 
-  <a class="btn btn-primary" style="float: right" href="/add/">Add a Customer</a>
+<a class="btn btn-primary" style="float: right" href="/add/">Add a Customer</a>
 
-  <h1>Customers</h1>
+<h1>Customers</h1>
 
+{% if customers.length === 0 %}
+  <h2>No customers found</h2>
+{% else %}
   <ul style="column-count: 4">
     {% for customer in customers %}
-      <li>
-        <a href="/{{ customer.id }}/">
-          {{ customer.fullName() }}
-        </a>
-      </li>
+    <li>
+      <a href="/{{ customer.id }}/">
+        {{ customer.fullName() }}
+      </a>
+    </li>
     {% endfor %}
   </ul>
+{% endif %}
+
 
 {% endblock %}
