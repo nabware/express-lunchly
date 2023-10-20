@@ -38,7 +38,13 @@ class Customer {
            FROM customers
            ORDER BY last_name, first_name`,
     );
-    return results.rows.map(c => new Customer(c));
+    const customers = results.rows.map(c => new Customer(c));
+
+    for (const customer of customers) {
+      customer.reservations = await customer.getReservations();
+    }
+
+    return customers;
   }
 
   /** get a customer by ID. */
@@ -84,7 +90,13 @@ class Customer {
       ORDER BY last_name, first_name`, [`%${searchTerm}%`]
     );//Can use concat between first_name and last_name with ' ' between
 
-    return results.rows.map(c => new Customer(c));
+    const customers = results.rows.map(c => new Customer(c));
+
+    for (const customer of customers) {
+      customer.reservations = await customer.getReservations();
+    }
+
+    return customers;
   }
 
   /** get top 10 customers who have the most reservations */

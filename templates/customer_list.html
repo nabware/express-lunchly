@@ -15,6 +15,16 @@
       <a href="/{{ customer.id }}/">
         {{ customer.fullName }}
       </a>
+      {% if customer.reservations.length !== 0 %}
+      <ul>
+        <li>
+          <!-- <a href="/reservations/{{ customer.reservations[0].id }}/edit/"> -->
+            <b>{{ customer.reservations[0].getFormattedStartAt() }}</b>
+            for {{ customer.reservations[0].numGuests }}
+          <!-- </a> -->
+        </li>
+      </ul>
+      {% endif %}
     </li>
     {% endfor %}
   </ul>

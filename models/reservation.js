@@ -131,6 +131,24 @@ class Reservation {
     return new Reservation(reservation);
   }
 
+  /** Get all a customers reservations. */
+
+  static async getReservationsForCustomer(customerId) {
+    const results = await db.query(
+      `SELECT id,
+                  customer_id AS "customerId",
+                  start_at AS "startAt",
+                  num_guests AS "numGuests",
+                  notes
+           FROM reservations
+           WHERE customer_id = $1
+           ORDER BY start_at DESC`,
+      [customerId],
+    );
+
+    return results.rows.map(r => new Reservation(r));
+  }
+
 }
 
 
