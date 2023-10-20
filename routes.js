@@ -38,11 +38,31 @@ router.post("/add/", async function (req, res, next) {
   if (req.body === undefined) {
     throw new BadRequestError();
   }
-  const { firstName, lastName, phone, notes } = req.body;
-  const customer = new Customer({ firstName, lastName, phone, notes });
+  const { firstName, lastName, phone, notes, middleName } = req.body;
+  const customer = new Customer({ firstName, lastName, phone, notes, middleName });
   await customer.save();
 
   return res.redirect(`/${customer.id}/`);
+});
+
+router.get("/reservations/:id/edit/", async function (req, res, next) {
+  const reservation = await Reservation.get(req.params.id);
+  console.log("reservation = ", reservation)
+
+  return res.render("reservations_edit_form.html", { reservation });
+});
+
+router.post("/reservations/:id/edit/", async function (req, res, next) {
+  if (req.body === undefined) {
+    throw new BadRequestError();
+  }
+  const reservation = await Reservation.get(req.params.id);
+  reservation.startAt = req.body.startAt;
+  reservation.numGuests = req.body.numGuests;
+  reservation.notes = req.body.notes;
+  await reservation.save();
+
+  return res.redirect(`/${reservation.customerId}/`);
 });
 
 /** Show a customer, given their ID. */

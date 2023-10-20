@@ -8,9 +8,10 @@ const Reservation = require("./reservation");
 /** Customer of the restaurant. */
 
 class Customer {
-  constructor({ id, firstName, lastName, phone, notes }) {
+  constructor({ id, firstName, middleName, lastName, phone, notes }) {
     this.id = id;
     this.firstName = firstName;
+    this.middleName = middleName;
     this.lastName = lastName;
     this.phone = phone;
     this.notes = notes;
@@ -31,6 +32,7 @@ class Customer {
       `SELECT id,
                   first_name AS "firstName",
                   last_name  AS "lastName",
+                  middle_name AS "middleName",
                   phone,
                   notes
            FROM customers
@@ -46,6 +48,7 @@ class Customer {
       `SELECT id,
                   first_name AS "firstName",
                   last_name  AS "lastName",
+                  middle_name AS "middleName",
                   phone,
                   notes
            FROM customers
@@ -71,6 +74,7 @@ class Customer {
       `SELECT id,
               first_name AS "firstName",
               last_name  AS "lastName",
+              middle_name AS "middleName",
               phone,
               notes
       FROM customers
@@ -90,6 +94,7 @@ class Customer {
       `SELECT customers.id,
             first_name AS "firstName",
             last_name  AS "lastName",
+            middle_name AS "middleName",
             phone,
             customers.notes,
             COUNT(*)
@@ -114,10 +119,10 @@ class Customer {
   async save() {
     if (this.id === undefined) {
       const result = await db.query(
-        `INSERT INTO customers (first_name, last_name, phone, notes)
-             VALUES ($1, $2, $3, $4)
+        `INSERT INTO customers (first_name, last_name, phone, notes, middle_name)
+             VALUES ($1, $2, $3, $4, $5)
              RETURNING id`,
-        [this.firstName, this.lastName, this.phone, this.notes],
+        [this.firstName, this.lastName, this.phone, this.notes, this.middleName],
       );
       this.id = result.rows[0].id;
     } else {
@@ -126,12 +131,14 @@ class Customer {
              SET first_name=$1,
                  last_name=$2,
                  phone=$3,
-                 notes=$4
-             WHERE id = $5`, [
+                 notes=$4,
+                 middle_name=$5
+             WHERE id = $6`, [
         this.firstName,
         this.lastName,
         this.phone,
         this.notes,
+        this.middleName,
         this.id,
       ],
       );
@@ -141,7 +148,7 @@ class Customer {
   /** Returns full name */
 
   get fullName() {
-    return this.firstName + " " + this.lastName;
+    return this.firstName + ' ' + this.middleName + ' ' + this.lastName;
   }
 }
 
